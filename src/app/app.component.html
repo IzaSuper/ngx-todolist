@@ -8,13 +8,13 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col">
-      <app-form (outputWorks)="addTodo($event)"></app-form>
+      <app-form (data)="addTodo($event)"></app-form>
 
     </div>
   </div>
   <div class="row">
     <div class="col">
-      <app-list [inputWorks]="array" (deleted)="deleted($event)"></app-list>
+      <app-list [data]="array" (deleted)="deleted($event)"></app-list>
     </div>
   </div>
 </div>
