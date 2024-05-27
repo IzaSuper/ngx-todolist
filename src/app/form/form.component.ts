@@ -1,6 +1,7 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgIf} from "@angular/common";
+import {Item} from "../interface/item";
 
 
 @Component({
@@ -13,14 +14,9 @@ import {NgIf} from "@angular/common";
 export class FormComponent implements OnInit {
 
   reactiveForm: FormGroup
-  private currentId = 0
 
   // TODO rename me to add()
-  @Output() outputWorks = new EventEmitter<{
-    id: number,
-    title: string,
-    description: string
-  }>()
+  @Output() data = new EventEmitter<Item>()
 
   ngOnInit() {
     this.reactiveForm = new FormGroup({
@@ -42,8 +38,7 @@ export class FormComponent implements OnInit {
     if (this.reactiveForm.invalid) {
       return
     }
-    this.outputWorks.emit({
-      id: this.currentId++,
+    this.data.emit({
       title: this.reactiveForm.get('title').value,
       description: this.reactiveForm.get('description').value
     })

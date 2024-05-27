@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {FormComponent} from "./form/form.component";
 import {ListComponent} from "./list/list.component";
+import {Item} from "./interface/item";
 
 @Component({
   selector: 'app-root',
@@ -11,18 +12,18 @@ import {ListComponent} from "./list/list.component";
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  array: { id: number, title: string, description: string }[] = [];
+  array: Item[] = [];
 
-  addTodo(todo: { id: number, title: string, description: string }) {
+  addTodo(todo: Item) {
     this.array = [
       todo,
       ...this.array
     ]
   }
 
-  deleted(id: number) {
+  deleted(indexToRemove: number) {
     this.array = [
-      ...this.array.filter(item => item.id !== id)
+      ...this.array.filter((_, index) => index !== indexToRemove)
     ]
   }
 }
