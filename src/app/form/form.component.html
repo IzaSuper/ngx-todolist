@@ -9,7 +9,7 @@
           formControlName="title"
           class="form-control"
           placeholder="Enter item"
-          style="border: none; border-bottom: 1px solid; border-radius: 0">
+          style="border: none; border-bottom: 1px solid darkgray; border-radius: 0 ">
         <div class="invalid-feedback ms-2 mt-2 d-block"
              *ngIf="(reactiveForm.get('title').touched && reactiveForm.get('title').invalid)">
           <span *ngIf="reactiveForm.get('title').errors['required']">
@@ -28,7 +28,7 @@
           formControlName="description"
           class="form-control"
           placeholder="Enter item"
-          style="border: none; border-bottom: 1px solid; border-radius: 0">
+          style="border: none; border-bottom: 1px solid darkgray; border-radius: 0">
         <div class="invalid-feedback ms-2 mt-2 d-block"
              *ngIf="(reactiveForm.get('description').touched && reactiveForm.get('description').invalid)">
           <span *ngIf="reactiveForm.get('description').errors['required']">
