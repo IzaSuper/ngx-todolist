@@ -13,9 +13,28 @@
           <th style="width: 50%">Description</th>
           <th>Delete</th>
         </tr>
+        <tr>
+          <td>
+            <input type="text"
+                   placeholder="Type to search by title..."
+                   class="search form-control"
+                   [(ngModel)]="filterByTitle">
+
+          </td>
+          <td>
+            <input type="text"
+                   placeholder="Type to search by description..."
+                   class="search form-control"
+                   [(ngModel)]="filterByDescription"
+            >
+          </td>
+          <td></td>
+        </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let item of data; let index = index">
+        <tr *ngFor="let item of data
+        | filterTitle: filterByTitle
+        | filterDescription: filterByDescription; let index = index">
           <td>
             {{ item.title }}
           </td>
