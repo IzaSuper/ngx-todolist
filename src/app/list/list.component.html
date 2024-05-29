@@ -11,6 +11,7 @@
         <tr>
           <th style="width: 34%">Title</th>
           <th style="width: 50%">Description</th>
+            <th>Completed</th>
           <th>Delete</th>
         </tr>
         <tr>
@@ -41,11 +42,13 @@
           <td>
             {{ item.description }}
           </td>
+            <td><input type="checkbox" [checked]="item.completed" (change)="completeItem(index)"></td>
           <td>
             <button class="btn-icon btn btn-danger" type="button" (click)="deleteItem(index)">
               <i class="bi bi-trash"></i>
             </button>
           </td>
+
         </tr>
         </tbody>
       </table>

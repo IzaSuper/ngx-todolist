@@ -40,4 +40,9 @@ export class AppComponent implements OnInit {
     ]
     this.saveList()
   }
+
+  complete(index: number): void {
+    // tu magia
+    this.saveList()
+  }
 }

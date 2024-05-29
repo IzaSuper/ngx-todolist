@@ -15,7 +15,6 @@ export class FormComponent implements OnInit {
 
   reactiveForm: FormGroup
 
-  // TODO rename me to add()
   @Output() data = new EventEmitter<Item>()
 
   ngOnInit() {
@@ -34,13 +33,14 @@ export class FormComponent implements OnInit {
     })
   }
 
-  submitted() {
+  add() {
     if (this.reactiveForm.invalid) {
       return
     }
     this.data.emit({
       title: this.reactiveForm.get('title').value,
-      description: this.reactiveForm.get('description').value
+      description: this.reactiveForm.get('description').value,
+      completed: false,
     })
     this.reactiveForm.reset()
   }

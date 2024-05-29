@@ -24,8 +24,13 @@ export class ListComponent {
   filterByDescription = ''
   @Input() data: Item[] = []
   @Output() deleted = new EventEmitter<number>()
+  @Output() complete = new EventEmitter<number>()
 
   deleteItem(index: number) {
     this.deleted.emit(index)
+  }
+
+  completeItem(index: number) {
+    this.complete.emit(index)
   }
 }

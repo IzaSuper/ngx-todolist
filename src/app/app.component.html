@@ -14,7 +14,7 @@
   </div>
   <div class="row">
     <div class="col">
-      <app-list [data]="array" (deleted)="deleted($event)"></app-list>
+      <app-list [data]="array" (deleted)="deleted($event)" (complete)="complete($event)"></app-list>
     </div>
   </div>
 </div>
