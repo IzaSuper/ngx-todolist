@@ -1,15 +1,14 @@
 <form [formGroup]="reactiveForm" (ngSubmit)="submitted()">
   <div class="row mt-4 justify-content-evenly">
-    <div class="col-10 d-flex align-items-center">
+    <div class="col-8 d-flex align-items-center">
       <div class="col-4 d-block align-items-center me-2" style="min-height: 100px">
         <label class=" ms-2 me-2 mb-0 fw-bolder">Title</label>
         <input
           type="text"
           id="title"
           formControlName="title"
-          class="form-control"
-          placeholder="Enter item"
-          style="border: none; border-bottom: 1px solid darkgray; border-radius: 0 ">
+          class="form-control input-class"
+          placeholder="Enter item">
         <div class="invalid-feedback ms-2 mt-2 d-block"
              *ngIf="(reactiveForm.get('title').touched && reactiveForm.get('title').invalid)">
           <span *ngIf="reactiveForm.get('title').errors['required']">
@@ -26,9 +25,8 @@
           type="text"
           id="description"
           formControlName="description"
-          class="form-control"
-          placeholder="Enter item"
-          style="border: none; border-bottom: 1px solid darkgray; border-radius: 0">
+          class="form-control input-class"
+          placeholder="Enter item">
         <div class="invalid-feedback ms-2 mt-2 d-block"
              *ngIf="(reactiveForm.get('description').touched && reactiveForm.get('description').invalid)">
           <span *ngIf="reactiveForm.get('description').errors['required']">
@@ -39,9 +37,11 @@
           </span>
         </div>
       </div>
-      <div class="col-1 d-">
+      <div class="col-1 me-5">
         <button type="submit"
-                class="btn btn-info btn-block text-nowrap ms-2 " id="add">
+                class="btn btn-success text-nowrap ms-2 gap-4"
+                id="add"
+                [disabled]="!(reactiveForm.valid)">
           Add todo
         </button>
       </div>

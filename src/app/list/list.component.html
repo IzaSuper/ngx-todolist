@@ -1,54 +1,73 @@
 <div class="row mt-4 justify-content-evenly">
-  <div class="mt-3 mb-3 col-10">
+  <div class="mt-3 mb-3 col-8">
     <h6 class='text-start ms-2 fw-bolder'>My todos</h6>
   </div>
 </div>
 <div class="row justify-content-evenly">
-  <div class="col-10">
+  <div class="col-8">
     <div class="table-responsive">
-      <table class="table">
-        <thead>
-        <tr>
-          <th style="width: 34%">Title</th>
-          <th style="width: 50%">Description</th>
-          <th>Delete</th>
-        </tr>
-        <tr>
-          <td>
-            <input type="text"
-                   placeholder="Type to search by title..."
-                   class="search form-control"
-                   [(ngModel)]="filterByTitle">
-
-          </td>
-          <td>
-            <input type="text"
-                   placeholder="Type to search by description..."
-                   class="search form-control"
-                   [(ngModel)]="filterByDescription"
-            >
-          </td>
-          <td></td>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let item of data
-        | filterTitle: filterByTitle
-        | filterDescription: filterByDescription; let index = index">
-          <td>
-            {{ item.title }}
-          </td>
-          <td>
-            {{ item.description }}
-          </td>
-          <td>
-            <button class="btn-icon btn btn-danger" type="button" (click)="deleteItem(index)">
-              <i class="bi bi-trash"></i>
-            </button>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+      <div *ngIf="isEmpty">
+        <h6 class="text-start ms-2 fw-bolder">
+          Empty list
+        </h6>
+      </div>
+      <ng-container *ngIf="!isEmpty">
+        <table class="table">
+          <thead>
+          <tr>
+            <th style="width: 30%" *ngFor="let column of columns">
+              {{ column }}
+            </th>
+            <th>
+              delete
+            </th>
+          </tr>
+          <tr>
+            <td *ngFor="let column of columns">
+              <ng-container *ngIf="column === 'completed'">
+                <select class="form-select fs-6"
+                        style="width: 40%"
+                        (input)="setFilter($event, column)">
+                  <option value="all">All</option>
+                  <option value="true">True</option>
+                  <option value="false">False</option>
+                </select>
+              </ng-container>
+              <ng-container *ngIf="column !== 'completed'">
+                <input type="text"
+                       placeholder="Type to search by {{column}}..."
+                       class="search form-control fs-6"
+                       (input)="setFilter($event, column)"/>
+              </ng-container>
+            </td>
+            <td></td>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let item of data
+          | filterByData: filterDefinition
+          | globalFilter: filterValue;
+            let index = index">
+            <td *ngFor="let column of columns">
+              <ng-container *ngIf="column !== 'completed'">
+                {{ item[column] }}
+              </ng-container>
+              <ng-container *ngIf="column === 'completed'">
+                <div class="ms-4">
+                  <input type="checkbox"
+                         (change)="isCheckboxChanged(index, $event)"
+                         [(ngModel)]="item.completed">
+                </div>
+              </ng-container>
+            <td>
+              <button class="btn-icon btn btn-danger" type="button" (click)="deleteItem(index)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </ng-container>
     </div>
   </div>
 </div>
