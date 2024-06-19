@@ -8,25 +8,17 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col">
-      <app-form (data)="addTodo($event)"></app-form>
+      <app-form></app-form>
     </div>
   </div>
   <div class="row">
     <div class="col">
-      <app-global-actions
-        (deleteList)="deleteList()"
-        (filterList)="filterList($event)"
-        [data]="array"
-      ></app-global-actions>
+      <app-global-actions></app-global-actions>
     </div>
   </div>
   <div class="row">
     <div class="col">
-      <app-list [data]="array"
-                [filterValue]="filterValue"
-                (deleted)="deleted($event)"
-                (checkboxChanged)="checkboxChanged($event)"
-      ></app-list>
+      <app-list></app-list>
     </div>
   </div>
 </div>
