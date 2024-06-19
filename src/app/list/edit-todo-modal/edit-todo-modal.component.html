@@ -1,0 +1,57 @@
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Todo</h1>
+      <button type="button" class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+              (click)="resetForm()">
+      </button>
+    </div>
+    <form [formGroup]="editForm" (ngSubmit)="editTodo()">
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="col-form-label">Title:</label>
+          <input type="text" class="form-control" formControlName="title">
+        </div>
+        <div style="min-height: 30px">
+          <div class="invalid-feedback ms-2 mt-2 d-block"
+               *ngIf="(editForm.get('title').touched && editForm.get('title').invalid)">
+          <span *ngIf="editForm.get('title').errors['required']">
+            Title is required
+          </span>
+            <span *ngIf="editForm.get('title').errors['maxlength']">
+            Maxlength 20 characters.
+          </span>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="col-form-label">Description:</label>
+          <textarea class="form-control" formControlName="description"></textarea>
+        </div>
+        <div style="min-height: 30px">
+          <div class="invalid-feedback ms-2 mt-2 d-block"
+               *ngIf="(editForm.get('description').touched && editForm.get('description').invalid)">
+          <span *ngIf="editForm.get('description').errors['required']">
+            Description is required.
+          </span>
+            <span *ngIf="editForm.get('description').errors['maxlength']">
+            No more than 50 characters required.
+          </span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+                (click)="resetForm()">Cancel
+        </button>
+        <button type="submit" class="btn btn-primary"
+                data-bs-dismiss="modal"
+                [disabled]="!(editForm.valid)">Edit todo
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

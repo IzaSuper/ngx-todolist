@@ -1,10 +1,10 @@
 <div class="row mt-4 justify-content-evenly">
-  <div class="mt-3 mb-3 col-8">
+  <div class="mt-3 mb-3 col-7">
     <h6 class='text-start ms-2 fw-bolder'>My todos</h6>
   </div>
 </div>
 <div class="row justify-content-evenly">
-  <div class="col-8">
+  <div class="col-7">
     <div class="table-responsive">
       <div *ngIf="isEmpty">
         <h6 class="text-start ms-2 fw-bolder">
@@ -15,52 +15,82 @@
         <table class="table">
           <thead>
           <tr>
-            <th style="width: 30%" *ngFor="let column of columns">
-              {{ column }}
-            </th>
-            <th>
+            <ng-container *ngFor="let column of columns">
+              <ng-container *ngIf="column !== 'id'">
+                <ng-container *ngIf="column !== 'completed'">
+                  <th style="width: 30%">
+                    {{ column }}
+                  </th>
+                </ng-container>
+                <ng-container *ngIf="column === 'completed'">
+                  <th style="width: 15%">
+                    {{ column }}
+                  </th>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+            <th style="width: 10%">edit</th>
+            <th style="width: 10%">
               delete
             </th>
           </tr>
           <tr>
-            <td *ngFor="let column of columns">
-              <ng-container *ngIf="column === 'completed'">
-                <select class="form-select fs-6"
-                        style="width: 40%"
-                        (input)="setFilter($event, column)">
-                  <option value="all">All</option>
-                  <option value="true">True</option>
-                  <option value="false">False</option>
-                </select>
+            <ng-container *ngFor="let column of columns">
+              <ng-container *ngIf="column !== 'id'">
+                <ng-container *ngIf="column === 'completed'">
+                  <td>
+                    <select class="form-select fs-6"
+                            style="width: 60%"
+                            (input)="setFilter(column,$event)">
+                      <option value="all">All</option>
+                      <option value="true">True</option>
+                      <option value="false">False</option>
+                    </select>
+                  </td>
+                </ng-container>
+                <ng-container *ngIf="column !== 'completed'">
+                  <td>
+                    <input type="text"
+                           placeholder="Type to search by {{column}}..."
+                           class="search form-control fs-6"
+                           (input)="setFilter(column, $event)"/>
+                  </td>
+                </ng-container>
               </ng-container>
-              <ng-container *ngIf="column !== 'completed'">
-                <input type="text"
-                       placeholder="Type to search by {{column}}..."
-                       class="search form-control fs-6"
-                       (input)="setFilter($event, column)"/>
-              </ng-container>
-            </td>
+            </ng-container>
+            <td></td>
             <td></td>
           </tr>
           </thead>
           <tbody>
-          <tr *ngFor="let item of data
-          | filterByData: filterDefinition
-          | globalFilter: filterValue;
-            let index = index">
-            <td *ngFor="let column of columns">
-              <ng-container *ngIf="column !== 'completed'">
-                {{ item[column] }}
+          <tr *ngFor="let item of filtered$ | async">
+            <ng-container *ngFor="let column of columns">
+              <ng-container *ngIf="column !== 'id'">
+                <td>
+                  <ng-container *ngIf="column !== 'completed'">
+                    {{ item[column] }}
+                  </ng-container>
+                  <ng-container *ngIf="column === 'completed'">
+                    <div class="ms-4">
+                      <input type="checkbox"
+                             [checked]="item.completed"
+                             (change)="isTodoCompleted(item.id, $event)">
+                    </div>
+                  </ng-container>
+                </td>
               </ng-container>
-              <ng-container *ngIf="column === 'completed'">
-                <div class="ms-4">
-                  <input type="checkbox"
-                         (change)="isCheckboxChanged(index, $event)"
-                         [(ngModel)]="item.completed">
-                </div>
-              </ng-container>
+            </ng-container>
             <td>
-              <button class="btn-icon btn btn-danger" type="button" (click)="deleteItem(index)">
+              <button type="button"
+                      class="btn btn-primary"
+                      (click)="confirmModal(item)">
+                <i class="bi bi-pencil"></i>
+              </button>
+            </td>
+            <td>
+              <button type="button"
+                      class="btn btn-danger"
+                      (click)="deleteItem(item.id)">
                 <i class="bi bi-trash"></i>
               </button>
             </td>
@@ -70,4 +100,8 @@
       </ng-container>
     </div>
   </div>
+</div>
+<div class="modal fade" id="exampleModal" tabindex="-1"
+     aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <app-edit-todo-modal [item]="editItem"></app-edit-todo-modal>
 </div>

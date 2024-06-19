@@ -1,7 +1,10 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgIf} from "@angular/common";
-import {Item} from "../interface/item";
+import {v4 as uuidv4} from 'uuid';
+import {Store} from "@ngrx/store";
+import {addTodo} from "../shared/store/todo.actions";
+import {Item} from "../shared/store/todo.model";
 
 
 @Component({
@@ -13,9 +16,10 @@ import {Item} from "../interface/item";
 })
 export class FormComponent implements OnInit {
 
-  reactiveForm: FormGroup
+  constructor(private store: Store<{ todos: Item[] }>) {
+  }
 
-  @Output() data = new EventEmitter<Item>()
+  reactiveForm: FormGroup
 
   ngOnInit() {
     this.reactiveForm = new FormGroup({
@@ -33,15 +37,17 @@ export class FormComponent implements OnInit {
     })
   }
 
-  submitted() {
+  onAdd() {
     if (this.reactiveForm.invalid) {
       return
     }
-    this.data.emit({
+    const todo: Item = {
+      id: uuidv4(),
       title: this.reactiveForm.get('title').value,
       description: this.reactiveForm.get('description').value,
       completed: false
-    })
+    }
+    this.store.dispatch(addTodo({todo}))
     this.reactiveForm.reset()
   }
 }

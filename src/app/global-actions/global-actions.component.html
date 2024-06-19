@@ -1,23 +1,26 @@
 <div class="row mt-4 mb-4 justify-content-evenly">
-  <div class="col-8 d-flex align-items-center">
+  <div class="col-7 d-flex align-items-center">
     <div class="col-10 d-block align-items-center me-2">
       <label class=" ms-2 me-2 mb-0 fw-bolder">Search</label>
       <input
         type="text"
         class="form-control input-class"
-        [(ngModel)]="filterValue"
-        (input)="filterByToDo()"
+        (input)="setGlobalFilter($event)"
         placeholder="Type to search by title or description..."
-        >
+      >
     </div>
     <div class="col-1 ms-2 me-5">
       <button type="button"
               class="btn btn-danger text-nowrap ms-2 gap-4"
               id="deleteAll"
-              (click)="deleteToDoList()"
-              [disabled]="(data.length === 0)">
+              (click)="confirmModal()"
+              [disabled]="(todosLength$ | async) === 0">
         Delete list
       </button>
     </div>
   </div>
+</div>
+
+<div class="modal" tabindex="-1" id="myModal">
+  <app-delete-list-modal></app-delete-list-modal>
 </div>
