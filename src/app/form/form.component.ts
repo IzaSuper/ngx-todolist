@@ -1,22 +1,23 @@
 import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {NgIf} from "@angular/common";
-import {v4 as uuidv4} from 'uuid';
+import {CommonModule, NgIf} from "@angular/common";
 import {Store} from "@ngrx/store";
 import {addTodo} from "../shared/store/todo.actions";
 import {Item} from "../shared/store/todo.model";
-
+import {HttpClient, HttpClientModule} from "@angular/common/http";
+import {environment} from "../../environments/environment";
 
 @Component({
   selector: 'app-form',
   standalone: true,
   imports: [ReactiveFormsModule, NgIf],
   templateUrl: './form.component.html',
-  styleUrl: './form.component.css'
+  styleUrl: './form.component.css',
+  providers: [HttpClientModule, CommonModule]
 })
 export class FormComponent implements OnInit {
 
-  constructor(private store: Store<{ todos: Item[] }>) {
+  constructor(private store: Store, private http: HttpClient) {
   }
 
   reactiveForm: FormGroup
@@ -42,12 +43,16 @@ export class FormComponent implements OnInit {
       return
     }
     const todo: Item = {
-      id: uuidv4(),
       title: this.reactiveForm.get('title').value,
       description: this.reactiveForm.get('description').value,
       completed: false
     }
-    this.store.dispatch(addTodo({todo}))
-    this.reactiveForm.reset()
+
+    this.http.post(environment.apiUrl, todo)
+      .subscribe((result: Item) => {
+        console.log("todo added")
+        this.store.dispatch(addTodo({todo: result}))
+        this.reactiveForm.reset()
+      })
   }
 }

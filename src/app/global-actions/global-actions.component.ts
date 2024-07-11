@@ -5,9 +5,6 @@ import {map, Observable} from "rxjs";
 import {select, Store} from "@ngrx/store";
 import {selectTodos} from "../shared/store/todo.selectors";
 import {AsyncPipe, NgIf} from "@angular/common";
-import {Modal} from "bootstrap";
-import {DeleteListModalComponent} from "./delete-list-modal/delete-list-modal.component";
-
 @Component({
   selector: 'app-global-actions',
   standalone: true,
@@ -15,8 +12,7 @@ import {DeleteListModalComponent} from "./delete-list-modal/delete-list-modal.co
     ReactiveFormsModule,
     FormsModule,
     AsyncPipe,
-    NgIf,
-    DeleteListModalComponent,
+    NgIf
   ],
   templateUrl: './global-actions.component.html',
   styleUrl: './global-actions.component.css'
@@ -31,11 +27,6 @@ export class GlobalActionsComponent {
       map(todos => todos.length)
     )
   }
-  confirmModal() {
-    const myModal = new Modal(document.getElementById('myModal'))
-    myModal.show()
-  }
-
   setGlobalFilter($event: Event) {
     const filterValue = ($event.target as HTMLInputElement).value
     this.store.dispatch(setGlobalFilter({filterValue}))
