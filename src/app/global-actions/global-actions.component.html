@@ -9,18 +9,6 @@
         placeholder="Type to search by title or description..."
       >
     </div>
-    <div class="col-1 ms-2 me-5">
-      <button type="button"
-              class="btn btn-danger text-nowrap ms-2 gap-4"
-              id="deleteAll"
-              (click)="confirmModal()"
-              [disabled]="(todosLength$ | async) === 0">
-        Delete list
-      </button>
-    </div>
   </div>
 </div>
 
-<div class="modal" tabindex="-1" id="myModal">
-  <app-delete-list-modal></app-delete-list-modal>
-</div>

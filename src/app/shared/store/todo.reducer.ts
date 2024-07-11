@@ -5,7 +5,7 @@ import {
   editTodo,
   removeTodo,
   setFilterValues,
-  setGlobalFilter
+  setGlobalFilter, setTodos
 } from './todo.actions';
 import {createReducer, on} from "@ngrx/store";
 import {Item} from "./todo.model";
@@ -23,6 +23,9 @@ export const initialState: State = {
 };
 export const todoReducer = createReducer(
   initialState,
+  on(setTodos, (state, {todos}) => {
+    return {...state, todos: [...todos]}
+  }),
   on(addTodo, (state, {todo}) => {
     return {...state, todos: [...state.todos, todo]}
   }),
