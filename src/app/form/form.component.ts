@@ -4,8 +4,7 @@ import {CommonModule, NgIf} from "@angular/common";
 import {Store} from "@ngrx/store";
 import {addTodo} from "../shared/store/todo.actions";
 import {Item} from "../shared/store/todo.model";
-import {HttpClient, HttpClientModule} from "@angular/common/http";
-import {environment} from "../../environments/environment";
+import {HttpClientModule} from "@angular/common/http";
 
 @Component({
   selector: 'app-form',
@@ -17,7 +16,7 @@ import {environment} from "../../environments/environment";
 })
 export class FormComponent implements OnInit {
 
-  constructor(private store: Store, private http: HttpClient) {
+  constructor(private store: Store) {
   }
 
   reactiveForm: FormGroup
@@ -48,11 +47,8 @@ export class FormComponent implements OnInit {
       completed: false
     }
 
-    this.http.post(environment.apiUrl, todo)
-      .subscribe((result: Item) => {
-        console.log("todo added")
-        this.store.dispatch(addTodo({todo: result}))
-        this.reactiveForm.reset()
-      })
+    this.store.dispatch(addTodo({todo}))
+    this.reactiveForm.reset()
+
   }
 }

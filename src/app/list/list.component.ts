@@ -9,8 +9,6 @@ import {completeTodo, setTodos, removeTodo, setFilterValues} from "../shared/sto
 import {Modal} from "bootstrap";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {EditTodoModalComponent} from "./edit-todo-modal/edit-todo-modal.component";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {environment} from "../../environments/environment";
 
 @Component({
   selector: 'app-list',
@@ -33,7 +31,7 @@ export class ListComponent implements OnInit {
   columns: (keyof Item)[] = ['id', 'title', "description", "completed"]
   editItem: Item
 
-  constructor(private store: Store, private http: HttpClient) {
+  constructor(private store: Store) {
     this.filters$ = this.store.pipe(select(selectFilters))
     this.todos$ = this.store.pipe(select(selectTodos));
     this.todos$.subscribe(todos => {
@@ -47,7 +45,7 @@ export class ListComponent implements OnInit {
     this.filtered$ = combineLatest([
       this.todos$,
       this.filters$,
-      store.pipe(select(selectGlobalFilterValue))
+      this.store.pipe(select(selectGlobalFilterValue))
     ]).pipe(
       map(([todos, filters, filterValue]) => {
         const lowerCaseFilterValue = filterValue.toLowerCase();
@@ -83,57 +81,25 @@ export class ListComponent implements OnInit {
       })
     );
   }
-  loadTodos(): Observable<Item[]> {
-    return this.http.get<Item[]>(environment.apiUrl);
-  }
-
   ngOnInit(): void {
-    this.loadTodos().subscribe(todos => {
-      if (todos && todos.length > 0) {
-        this.store.dispatch(setTodos({todos: todos}))
-      } else {
-        console.log("API FETCH: todos list empty")
-      }
-
-    })
+    this.store.dispatch(setTodos())
   }
-
-
 
   deleteItem(id: string) {
-    this.http.delete(`${environment.apiUrl}/${id}`)
-      .subscribe((result) => {
-        console.log('todo deleted', result)
-        this.store.dispatch(removeTodo({id}));
-      })
+    this.store.dispatch(removeTodo({id}));
   }
 
   isTodoCompleted(id: string, event: Event) {
     const completed = (event.target as HTMLInputElement).checked;
     this.todos$.pipe(take(1)).subscribe(todos => {
-      const todo = todos.find((todo => todo.id === id))
+      const todo = todos.find(todo => todo.id === id)
       if (todo) {
-        const title = todo.title
-        const description = todo.description
-
-        const body = {
-          id: id,
-          title: title,
-          description: description,
-          completed: completed,
-        }
-        this.http.put(`${environment.apiUrl}/${id}`, body, {
-          headers: new HttpHeaders({
-            'Content-Type': 'application/json'
-          })
-        })
-          .subscribe(() => {
-              console.log("todo completed changed")
-              this.store.dispatch(completeTodo({id, completed: completed}));
-            },
-            error => {
-              console.error(error)
-            })
+        this.store.dispatch(completeTodo({
+          todo: {
+            ...todo,
+            completed
+          }
+        }))
       }
     })
   }
