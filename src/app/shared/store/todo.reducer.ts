@@ -1,46 +1,59 @@
 import {
-  addTodo,
-  completeTodo,
-  deleteList,
-  editTodo,
-  removeTodo,
+  addTodoSuccess,
+  apiError,
+  setTodosSuccess,
+  completeTodoSuccess,
+  editTodoSuccess,
+  removeTodoSuccess,
   setFilterValues,
-  setGlobalFilter, setTodos
+  setGlobalFilter
 } from './todo.actions';
-import {createReducer, on} from "@ngrx/store";
+import {Action, ActionReducer, createReducer, MetaReducer, on} from "@ngrx/store";
 import {Item} from "./todo.model";
 
 export interface State {
   todos: Item[];
   filters: Map<keyof Item, Item[keyof Item]>,
-  filterValue: string
+  filterValue: string,
+  error: string | null
 }
 
 export const initialState: State = {
   todos: [],
   filters: new Map<keyof Item, Item[keyof Item]>(),
-  filterValue: ''
+  filterValue: '',
+  error: null
 };
 export const todoReducer = createReducer(
   initialState,
-  on(setTodos, (state, {todos}) => {
+  on(setTodosSuccess, (state, {todos}) => {
     return {...state, todos: [...todos]}
   }),
-  on(addTodo, (state, {todo}) => {
+  on(addTodoSuccess, (state, {todo}) => {
     return {...state, todos: [...state.todos, todo]}
   }),
-  on(removeTodo, (state, {id}) => {
-    return {
-      ...state, todos: [...state.todos.filter(todo => todo.id !== id)]
+  on(apiError, (state, { error }) => ({
+    ...state,
+    error
+  })),
+  on(removeTodoSuccess, (state, {id}) => {
+    return {...state,
+      todos: [...state.todos.filter(todo => todo.id !== id)]
     }
   }),
-  on(completeTodo, (state, {id, completed}) => {
-    const updatedTodos = state.todos.map((item) =>
-      item.id === id ? {...item, completed} : item
-    );
+  on(completeTodoSuccess, (state, {todo}) => {
     return {
       ...state,
-      todos: updatedTodos
+      todos: [...state.todos.map(item =>
+      item.id === todo.id ? {...item, completed: todo.completed} : item)]
+    }
+  }),
+  on(editTodoSuccess, (state, {todo}) => {
+    return {
+      ...state,
+      todos: state.todos.map(item =>
+        item.id === todo.id ? {...item, title: todo.title, description: todo.description} : item
+      )
     }
   }),
   on(setFilterValues, (state, {column, value}) => {
@@ -52,21 +65,19 @@ export const todoReducer = createReducer(
     return {
       ...state, filterValue: filterValue
     }
-  }),
-  on(deleteList, (state) => {
-    return {
-      ...state,
-      todos: [],
-      filters: new Map(),
-      filterValue: '',
-    }
-  }),
-  on(editTodo, (state, {id, title, description}) => {
-    return {
-      ...state,
-      todos: state.todos.map(todo =>
-        todo.id === id ? {...todo, title, description} : todo
-      )
-    }
   })
 )
+
+export function loggerMetaReducer(reducer: ActionReducer<any>): ActionReducer<any> {
+  return function(state, action) {
+    console.groupCollapsed(action.type);
+    console.log('prev state', state);
+
+    const newState = reducer(state, action);
+
+    console.log('next state', newState);
+    console.groupEnd();
+
+    return newState;
+  };
+}
