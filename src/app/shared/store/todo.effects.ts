@@ -12,7 +12,7 @@ import {
   removeTodoSuccess, setTodos, setTodosSuccess
 } from "./todo.actions";
 import {of} from "rxjs";
-import {catchError, exhaustMap, map, switchMap, tap} from "rxjs/operators";
+import {catchError, map, switchMap, tap} from "rxjs/operators";
 import {Item} from "./todo.model";
 import {environment} from "../../../environments/environment";
 
@@ -41,14 +41,8 @@ export class TodoEffects {
         this.http.delete<void>(
           `${environment.apiUrl}/${action.id}`)
           .pipe(
-            tap(() => console.log("todo deleted success", action.id)),
             map(() => removeTodoSuccess({id: action.id})),
             catchError((err) => {
-              if (err.status === 0) {
-                console.log("Looks like you are offline. Check your internet connection")
-              } else {
-                console.log('unrecognized error')
-              }
               return of(apiError(err))
             })
           ))
@@ -60,14 +54,8 @@ export class TodoEffects {
         this.http.put<Item>(
           `${environment.apiUrl}/${action.todo.id}`, action.todo)
           .pipe(
-            tap(() => console.log("todo updated success", action.todo.completed)),
             map((todo) => completeTodoSuccess({todo})),
             catchError((err) => {
-              if (err.status === 0) {
-                console.log("Looks like you are offline. Check your internet connection")
-              } else {
-                console.log('unrecognized error')
-              }
               return of(apiError(err))
             })
           ))
@@ -79,14 +67,8 @@ export class TodoEffects {
         this.http.put<Item>(
           `${environment.apiUrl}/${action.todo.id}`, action.todo)
           .pipe(
-            tap(() => console.log("todo edited success", action.todo)),
             map((todo) => editTodoSuccess({todo})),
             catchError((err) => {
-              if (err.status === 0) {
-                console.log("Looks like you are offline. Check your internet connection")
-              } else {
-                console.log('unrecognized error')
-              }
               return of(apiError(err))
             })
           ))
@@ -97,16 +79,10 @@ export class TodoEffects {
       switchMap(action =>
         this.http.get<Item[]>(environment.apiUrl)
           .pipe(
-            tap(() => console.log("todo loaded success")),
             map((todos) => {
               return setTodosSuccess({todos})
             }),
             catchError((err) => {
-              if (err.status === 0) {
-                console.log("Looks like you are offline. Check your internet connection")
-              } else {
-                console.log('unrecognized error')
-              }
               return of(apiError(err))
             })
           ))
