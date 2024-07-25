@@ -28,15 +28,8 @@ export class TodoEffects {
         this.http.post<Item>(
           `${environment.apiUrl}`, action.todo
         ).pipe(
-          tap(() => console.log("todo added success")),
           map((todo: Item) => addTodoSuccess({todo})),
           catchError((err) => {
-            if (err.status === 0) {
-              console.log("Looks like you are offline. Check your internet connection")
-            } else {
-              console.log('unrecognized error')
-            }
-
             return of(apiError(err))
           })
         ))
