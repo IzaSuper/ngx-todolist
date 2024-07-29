@@ -42,7 +42,7 @@
                     <select class="form-select fs-6"
                             style="width: 60%"
                             (input)="setFilter(column,$event)">
-                      <option value="all">All</option>
+                      <option value="">All</option>
                       <option value="true">True</option>
                       <option value="false">False</option>
                     </select>
@@ -63,7 +63,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr *ngFor="let item of filtered$ | async">
+          <tr *ngFor="let item of todos$ | async">
             <ng-container *ngFor="let column of columns">
               <ng-container *ngIf="column !== 'id'">
                 <td>

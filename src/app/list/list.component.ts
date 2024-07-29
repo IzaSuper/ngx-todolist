@@ -26,7 +26,6 @@ import {EditTodoModalComponent} from "./edit-todo-modal/edit-todo-modal.componen
 export class ListComponent implements OnInit {
   todos$: Observable<Item[]>
   filters$: Observable<Map<keyof Item, string | boolean>>
-  filtered$: Observable<Item[]>
   isEmpty = true
   columns: (keyof Item)[] = ['id', 'title', "description", "completed"]
   editItem: Item
@@ -42,44 +41,6 @@ export class ListComponent implements OnInit {
         this.columns = Object.keys(todos[0]) as (keyof Item)[];
       }
     });
-    this.filtered$ = combineLatest([
-      this.todos$,
-      this.filters$,
-      this.store.pipe(select(selectGlobalFilterValue))
-    ]).pipe(
-      map(([todos, filters, filterValue]) => {
-        const lowerCaseFilterValue = filterValue.toLowerCase();
-        return todos.filter(todo => {
-          if (
-            lowerCaseFilterValue !== "" &&
-            (!todo.title.toLowerCase().includes(lowerCaseFilterValue) &&
-              !todo.description.toLowerCase().includes(lowerCaseFilterValue))
-          ) {
-            return false;
-          }
-          for (let [key, value] of filters) {
-            switch (key) {
-              case 'completed':
-                if (value !== 'all' && todo[key].toString() !== value) {
-                  return false;
-                }
-                break;
-              case 'title':
-              case 'description':
-                const lowerCaseValue = value.toString().toLowerCase();
-                if (lowerCaseValue !== '' && !todo[key]?.toLowerCase().includes(lowerCaseValue)) {
-                  return false;
-                }
-                break;
-              default:
-                console.log('Unrecognized type');
-                break;
-            }
-          }
-          return true;
-        });
-      })
-    );
   }
   ngOnInit(): void {
     this.store.dispatch(setTodos())
@@ -90,6 +51,7 @@ export class ListComponent implements OnInit {
   }
 
   isTodoCompleted(id: string, event: Event) {
+    // TODO move to reducer
     const completed = (event.target as HTMLInputElement).checked;
     this.todos$.pipe(take(1)).subscribe(todos => {
       const todo = todos.find(todo => todo.id === id)
@@ -105,8 +67,14 @@ export class ListComponent implements OnInit {
   }
 
   setFilter(column: keyof Item, $event: Event) {
-    const value = ($event.target as HTMLInputElement).value;
-    this.store.dispatch(setFilterValues({column, value}))
+    if (column === "completed") {
+      const value = ($event.target as HTMLInputElement).value
+      const castValue = value === "" ? "" : value === "true"
+      this.store.dispatch(setFilterValues({column, value: castValue}))
+    } else {
+      const value = ($event.target as HTMLInputElement).value
+      this.store.dispatch(setFilterValues({column, value}))
+    }
   }
 
   confirmModal(item: Item) {
