@@ -8,10 +8,11 @@ import {
   setFilterValues,
   setGlobalFilter
 } from './todo.actions';
-import {Action, ActionReducer, createReducer, MetaReducer, on} from "@ngrx/store";
+import {ActionReducer, createReducer, on} from "@ngrx/store";
 import {Item} from "./todo.model";
 
 export interface State {
+  allTodos: Item[];
   todos: Item[];
   filters: Map<keyof Item, Item[keyof Item]>,
   filterValue: string,
@@ -19,6 +20,7 @@ export interface State {
 }
 
 export const initialState: State = {
+  allTodos: [],
   todos: [],
   filters: new Map<keyof Item, Item[keyof Item]>(),
   filterValue: '',
@@ -27,10 +29,10 @@ export const initialState: State = {
 export const todoReducer = createReducer(
   initialState,
   on(setTodosSuccess, (state, {todos}) => {
-    return {...state, todos: [...todos]}
+    return {...state, todos: [...todos], allTodos: [...todos]}
   }),
   on(addTodoSuccess, (state, {todo}) => {
-    return {...state, todos: [...state.todos, todo]}
+    return {...state, todos: [...state.todos, todo], allTodos: [...state.allTodos, todo]}
   }),
   on(apiError, (state, { error }) => ({
     ...state,
@@ -38,28 +40,53 @@ export const todoReducer = createReducer(
   })),
   on(removeTodoSuccess, (state, {id}) => {
     return {...state,
-      todos: [...state.todos.filter(todo => todo.id !== id)]
+      todos: [...state.todos.filter(todo => todo.id !== id)],
+      allTodos: [...state.allTodos.filter(todo => todo.id !== id)]
     }
   }),
   on(completeTodoSuccess, (state, {todo}) => {
     return {
       ...state,
       todos: [...state.todos.map(item =>
-      item.id === todo.id ? {...item, completed: todo.completed} : item)]
+        item.id === todo.id ? {...item, completed: todo.completed} : item)
+      ],
+      allTodos: [...state.allTodos.map(item =>
+        item.id === todo.id ? {...item, completed: todo.completed} : item)]
     }
   }),
   on(editTodoSuccess, (state, {todo}) => {
     return {
       ...state,
-      todos: state.todos.map(item =>
-        item.id === todo.id ? {...item, title: todo.title, description: todo.description} : item
-      )
+      todos: [...state.todos.map(item =>
+        item.id === todo.id ? {...item, title: todo.title, description: todo.description} : item)
+        ],
+      allTodos: [...state.allTodos.map(item =>
+        item.id === todo.id ? {...item, title: todo.title, description: todo.description} : item)
+      ],
     }
   }),
   on(setFilterValues, (state, {column, value}) => {
     const newFilters = new Map(state.filters);
-    newFilters.set(column, value);
-    return {...state, filters: newFilters};
+    if (value === '') {
+      newFilters.delete(column);
+    } else {
+      newFilters.set(column, value);
+    }
+
+    const newArr = state.allTodos.filter((obj) => {
+      return Array.from(newFilters.entries()).every(([filterKey, value]) => {
+        if (filterKey === "completed") {
+          return obj[filterKey] === value;
+        }
+        return (obj[filterKey] as any).indexOf((value as string).toLocaleLowerCase()) > -1;
+      });
+    });
+
+    return {
+      ...state,
+      filters: newFilters,
+      todos: [...newArr],
+    };
   }),
   on(setGlobalFilter, (state, {filterValue}) => {
     return {
